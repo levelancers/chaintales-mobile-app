@@ -1,9 +1,12 @@
-import { SafeAreaView, Image, Text, TouchableOpacity, StyleSheet, View } from "react-native";
+import { SafeAreaView, Image, Text, TouchableOpacity, StyleSheet, View, Button } from "react-native";
 import { clearToken, clearUser } from "../store/slices/userSlice";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import { selectToken, selectUser } from "../store/slices/userSlice";
 import { useSelector } from "react-redux";
+import ProfileScreen from "./ProfileScreen";
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 const styles = StyleSheet.create({
     container: {
@@ -48,6 +51,7 @@ const styles = StyleSheet.create({
     },  
 });
 
+
 export default function({ navigation }) {
     const dispatch = useDispatch();
     const token = useSelector(selectToken);
@@ -70,7 +74,7 @@ export default function({ navigation }) {
           console.log(error);
         }
       };
-
+      
     return (
         <SafeAreaView style={styles.container}>
          <Image source={{
@@ -83,7 +87,7 @@ export default function({ navigation }) {
                 <Text style={styles.username}>{user.name}</Text>
                 </View> : <Text style={styles.welcomeText}>Chaintales</Text> }
                 <TouchableOpacity style={styles.logoutButton} onPress={logoutHandler}>
-                    <Text style={styles.logoutText}>Logout</Text>
+                  <Text style={styles.logoutText}>Logout</Text>
                 </TouchableOpacity>
             </View>
             <View>
@@ -92,6 +96,7 @@ export default function({ navigation }) {
                 }} style={styles.button}>
                     <Text style={{color: '#fff', fontFamily: 'MobilesFont'}}>Stories</Text>
                 </TouchableOpacity>
+              <Button title="Profile" style={styles.logoutButton} onPress={() => navigation.navigate("Profile")}/>
             </View>
         </SafeAreaView>
     );
