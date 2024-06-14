@@ -1,11 +1,11 @@
 import { StatusBar } from "expo-status-bar";
 import { Text, View } from "react-native";
-import Slogan from './screens/App/Slogan';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import LoginScreen from "./screens/LoginScreen";
 import HomeScreen from "./screens/HomeScreen";
 import RegisterScreen from "./screens/RegisterScreen";
+import ProfileScreen from "./screens/ProfileScreen";
 import { useSelector, useDispatch } from 'react-redux';
 import { selectToken, selectUser } from "./store/slices/userSlice";
 
@@ -20,6 +20,7 @@ export default function App() {
       {user ? (
         <>
         <Stack.Screen name="Home" component={HomeScreen}/>
+        <Stack.Screen name="Profile" component={ProfileScreen}/>
           </>
       ) : (
         <>
