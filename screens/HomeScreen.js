@@ -1,10 +1,52 @@
-import { SafeAreaView, Text, Button } from "react-native";
+import { SafeAreaView, Image, Text, TouchableOpacity, StyleSheet, View } from "react-native";
 import { clearToken, clearUser } from "../store/slices/userSlice";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import { selectToken, selectUser } from "../store/slices/userSlice";
 import { useSelector } from "react-redux";
 
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#F8F6E3',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    logo: {
+      width: 300,
+      height: 100,
+      alignSelf: 'center',
+      marginBottom: 20,
+      paddingHorizontal: 40,
+      resizeMode: 'contain',
+    },
+    welcomeContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    welcomeText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        fontFamily: 'MobilesFont',
+    },
+    logoutButton: {
+        backgroundColor: "#334155",
+        padding: 10,
+        borderRadius: 5,
+        marginLeft: 10,
+    },
+    logoutText: {
+        color: '#fff',
+        fontFamily: 'MobilesFont',
+    },
+    username: {
+        color: '#7BC9FF',
+        fontSize: 20,
+        textAlign: 'center',
+        fontFamily: 'MobilesFont',
+    },  
+});
 
 export default function() {
     const dispatch = useDispatch();
@@ -30,9 +72,20 @@ export default function() {
       };
 
     return (
-        <SafeAreaView>
-            {user ? <Text>Welcome home, {user.name}</Text> : <Text>Chaintales</Text> }
-            <Button title="Logout" onPress={logoutHandler} />
+        <SafeAreaView style={styles.container}>
+         <Image source={{
+              uri: 'https://i.postimg.cc/Y0xQqW9m/logo.png'
+            }} style={styles.logo}/>
+            <View style={styles.welcomeContainer}>
+                {user ? 
+                <View>
+                <Text style={styles.welcomeText}>Welcome home,</Text>
+                <Text style={styles.username}>{user.name}</Text>
+                </View> : <Text style={styles.welcomeText}>Chaintales</Text> }
+                <TouchableOpacity style={styles.logoutButton} onPress={logoutHandler}>
+                    <Text style={styles.logoutText}>Logout</Text>
+                </TouchableOpacity>
+            </View>
         </SafeAreaView>
     );
 }

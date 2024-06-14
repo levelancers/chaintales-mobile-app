@@ -1,8 +1,16 @@
-import { SafeAreaView, Text, View, TextInput, StyleSheet, Button, Platform } from "react-native";
-import { useState } from "react";
+import { SafeAreaView, TouchableOpacity, Text, View, Image, TextInput, StyleSheet, Button, Platform } from "react-native";
+import { useState, useEffect } from "react";
 import { setToken, setUser } from "../store/slices/userSlice";
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
+import SplashScreen from './SplashScreen';
+import * as Font from 'expo-font';
+
+const fetchFonts = () => {
+    return Font.loadAsync({
+      'MobilesFont': require('../assets/fonts/MobilesFont.ttf'),
+    });
+  };
 
 const styles = StyleSheet.create({
     label: {
@@ -10,20 +18,43 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     textInput: {
-        backgroundColor: "#f1f5f9",
         height: 40,
-        marginTop: 4,
-        borderWidth: 1,
-        borderRadius: 4,
-        borderColor: "#cbd5e1",
-        padding: 10,
+        borderColor: '#ddd',
+        borderBottomWidth: 1,
+        marginBottom: 10,
+        paddingHorizontal: 10,
     },
+    button: {
+        backgroundColor: "#334155",
+        color: "#fff",
+        padding: 10,
+        borderRadius: 5,
+        textAlign: 'center',
+        marginTop: 10,
+        fontFamily: 'MobilesFont',
+      },
     error: {
         color: "red",
         marginTop: 2,
     },
-    wrapper: {backgroundColor: "#fff", flex: 1},
-    container: {padding: 20, rowGap: 16 },
+    wrapper: {
+        flex: 1,
+        backgroundColor: "#F8F6E3",
+    },
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F8F6E3',
+      },
+    logo: {
+        width: 300,
+        height: 100,
+        alignSelf: 'center',
+        marginBottom: 20,
+        paddingHorizontal: 40,
+        resizeMode: 'contain',
+    },
 });
 
 function FormTextField({label, errors = [], ...rest }){
@@ -47,10 +78,19 @@ function FormTextField({label, errors = [], ...rest }){
 }
 
 export default function({ navigation }) {
-    const dispatch = useDispatch();
+    const [dataLoaded, setDataLoaded] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        fetchFonts().then(() => setDataLoaded(true));
+      }, []);
+    
+      if (!dataLoaded) {
+        return <SplashScreen />;
+      }
 
     async function handleLogin(){
         setErrors({});
@@ -82,27 +122,34 @@ export default function({ navigation }) {
     }
 
     return (
-        <SafeAreaView style={styles.wrapper}>
-            <View style={styles.container}>
-             <FormTextField 
-             label="Email address:" 
-             value={email} 
-             onChangeText={(text) => setEmail(text)}
-             keyboardType="email-address"
-             errors={errors.email}
-             />
-             <FormTextField 
-             label="Password:" 
-             secureTextEntry={true}
-             value={password} 
-             onChangeText={(text) => setPassword(text)}
-             errors={errors.password}
-             />
-             <Button title="Login" onPress={handleLogin}/>
-             <Button title="Create an account" onPress={() => {
-                navigation.navigate("Create account");
-             }}/>
-            </View>
+        <SafeAreaView style={styles.container}>
+          <View style={styles.container}>
+            <Image source={{
+              uri: 'https://i.postimg.cc/Y0xQqW9m/logo.png'
+            }} style={styles.logo}/>
+            <FormTextField 
+              label="Email address:" 
+              value={email} 
+              onChangeText={(text) => setEmail(text)}
+              keyboardType="email-address"
+              errors={errors.email}
+            />
+            <FormTextField 
+              label="Password:" 
+              secureTextEntry={true}
+              value={password} 
+              onChangeText={(text) => setPassword(text)}
+              errors={errors.password}
+            />
+            <TouchableOpacity onPress={handleLogin} style={styles.button}>
+              <Text style={{color: '#fff', fontFamily: 'MobilesFont'}}>Login</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => {
+              navigation.navigate("Create account");
+            }} style={styles.button}>
+              <Text style={{color: '#fff', fontFamily: 'MobilesFont'}}>Create an account</Text>
+            </TouchableOpacity>
+          </View>
         </SafeAreaView>
-    );
+      );
 }

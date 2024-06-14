@@ -1,9 +1,8 @@
-import { SafeAreaView, Text, View, TextInput, StyleSheet, Button, Platform } from "react-native";
+import { SafeAreaView, Image, Text, View, TextInput, StyleSheet, TouchableOpacity, Platform } from "react-native";
 import { useState } from "react";
 import { setToken, setUser } from "../store/slices/userSlice";
 import { useDispatch } from 'react-redux';
 import axios from 'axios'
-
 
 function FormTextField({label, errors = [], ...rest }){
     return (
@@ -23,7 +22,7 @@ function FormTextField({label, errors = [], ...rest }){
         </View>
     );
 }
-    export default function() {
+    export default function({ navigation }) {
         const dispatch = useDispatch();
         const [name, setName] = useState("");
         const [email, setEmail] = useState("");
@@ -31,7 +30,7 @@ function FormTextField({label, errors = [], ...rest }){
         const [passwordConfirmation, setPasswordConfirmation] = useState("");
         const [errors, setErrors] = useState({});
     
-        async function handleRegister({ navigation }){
+        async function handleRegister(){
             setErrors({});
     
             try {
@@ -42,10 +41,10 @@ function FormTextField({label, errors = [], ...rest }){
                     password_confirmation: passwordConfirmation,
                     device_name: `${Platform.OS} ${Platform.Version}`
                 });
-    
-                if (response.data.access_token) {
-                    dispatch(setToken(response.data.access_token));
-                    dispatch(setUser(user));
+                console.log(response.data.token);
+                if (response.data.token) {
+                    dispatch(setToken(response.data.token));
+                    dispatch(setUser(response.data.user));
                     navigation.replace("Home");
                 }
     
@@ -58,6 +57,9 @@ function FormTextField({label, errors = [], ...rest }){
 
     return (
         <SafeAreaView style={styles.wrapper}>
+         <Image source={{
+              uri: 'https://i.postimg.cc/Y0xQqW9m/logo.png'
+            }} style={styles.logo}/>
             <View style={styles.container}>
              <FormTextField 
              label="Your name:" 
@@ -86,7 +88,9 @@ function FormTextField({label, errors = [], ...rest }){
              onChangeText={(text) => setPasswordConfirmation(text)}
              errors={errors.password_confirmation}
              />
-             <Button title="Register now" onPress={handleRegister}/>
+             <TouchableOpacity style={styles.button} onPress={handleRegister}>
+                <Text style={{color: '#fff', fontFamily: 'MobilesFont'}}>Register now</Text>
+             </TouchableOpacity>
             </View>
         </SafeAreaView>
     )
@@ -95,14 +99,14 @@ function FormTextField({label, errors = [], ...rest }){
 const styles = StyleSheet.create({
     wrapper: {
         flex: 1,
-        backgroundColor: '#F5F5F5',
+        backgroundColor: '#F8F6E3',
         alignItems: 'center',
         justifyContent: 'center',
     },
     container: {
         width: '80%',
         padding: 20,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#ECEAD8',
         borderRadius: 10,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -126,5 +130,22 @@ const styles = StyleSheet.create({
     error: {
         color: 'red',
         marginBottom: 15,
+    },
+    button: {
+        backgroundColor: "#334155",
+        color: "#fff",
+        padding: 10,
+        borderRadius: 5,
+        textAlign: 'center',
+        marginTop: 10,
+        fontFamily: 'MobilesFont',
+    },
+    logo: {
+        width: 300,
+        height: 100,
+        alignSelf: 'center',
+        marginBottom: 20,
+        paddingHorizontal: 40,
+        resizeMode: 'contain',
     },
 });
