@@ -1,10 +1,33 @@
 import { SafeAreaView, Text, View, TextInput, StyleSheet, Button, Platform } from "react-native";
-import { useState, useContext } from "react";
-import axios from "../utils/axios";
-import { login, loadUser } from "../services/AuthService";
-import AuthContext from "../contexts/AuthContext";
+import { useState } from "react";
+import { setToken, setUser } from "../store/slices/userSlice";
+import { useDispatch } from 'react-redux';
+import axios from 'axios';
+
+const styles = StyleSheet.create({
+    label: {
+        color: "#334155",
+        fontWeight: "bold",
+    },
+    textInput: {
+        backgroundColor: "#f1f5f9",
+        height: 40,
+        marginTop: 4,
+        borderWidth: 1,
+        borderRadius: 4,
+        borderColor: "#cbd5e1",
+        padding: 10,
+    },
+    error: {
+        color: "red",
+        marginTop: 2,
+    },
+    wrapper: {backgroundColor: "#fff", flex: 1},
+    container: {padding: 20, rowGap: 16 },
+});
 
 function FormTextField({label, errors = [], ...rest }){
+    
     return (
         <View>
             {label && 
@@ -23,30 +46,36 @@ function FormTextField({label, errors = [], ...rest }){
     );
 }
 
-
-
 export default function({ navigation }) {
-    const {setUser} = useContext(AuthContext);
+    const dispatch = useDispatch();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
 
     async function handleLogin(){
         setErrors({});
-
+    
         try {
-            await login({
+            console.log('Attempting to log in with email:', email, 'and password:', password);
+            const response = await axios.post('https://chaintales.bieda.it/api/v1/login', {
                 email,
                 password,
                 device_name: `${Platform.OS} ${Platform.Version}`
             });
-
-            const user = await loadUser();
-
-            setUser(user);
-
+    
+            console.log('Response from server:', response);
+    
+            if (response.data.token) {
+                console.log('Received access token:', response.data.token);
+                dispatch(setToken(response.data.token));
+                console.log('Loaded user:', response.data.user);
+                dispatch(setUser(response.data.user));
+            }
+    
         } catch (e) {
+            console.log('Error during login:', e);
             if (e.response?.status === 422) {
+                console.log('Validation errors:', e.response.data.errors);
                 setErrors(e.response.data.errors);
             }
         }
@@ -75,27 +104,5 @@ export default function({ navigation }) {
              }}/>
             </View>
         </SafeAreaView>
-    )
+    );
 }
-
-const styles = StyleSheet.create({
-    label: {
-        color: "#334155",
-        //fontWeight: 500,
-    },
-    textInput: {
-        backgroundColor: "#f1f5f9",
-        height: 40,
-        marginTop: 4,
-        borderWidth: 1,
-        borderRadius: 4,
-        borderColor: "#cbd5e1",
-        padding: 10,
-    },
-    error: {
-        color: "red",
-        marginTop: 2,
-    },
-    wrapper: {backgroundColor: "#fff", flex: 1},
-    container: {padding: 20, rowGap: 16 },
-})

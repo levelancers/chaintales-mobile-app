@@ -1,8 +1,9 @@
 import { SafeAreaView, Text, View, TextInput, StyleSheet, Button, Platform } from "react-native";
-import { useState, useContext } from "react";
-import axios from "../utils/axios";
-import { register, loadUser } from "../services/AuthService";
-import AuthContext from "../contexts/AuthContext";
+import { useState } from "react";
+import { setToken, setUser } from "../store/slices/userSlice";
+import { useDispatch } from 'react-redux';
+import axios from 'axios'
+
 
 function FormTextField({label, errors = [], ...rest }){
     return (
@@ -22,40 +23,38 @@ function FormTextField({label, errors = [], ...rest }){
         </View>
     );
 }
-
-
-
-export default function() {
-    const {setUser} = useContext(AuthContext);
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [passwordConfirmation, setPasswordConfirmation] = useState("");
-    const [errors, setErrors] = useState({});
-
-    async function handleRegister({ navigation }){
-        setErrors({});
-
-        try {
-            await register({
-                name,
-                email,
-                password,
-                password_confirmation: passwordConfirmation,
-                device_name: `${Platform.OS} ${Platform.Version}`
-            });
-
-            const user = await loadUser();
-
-            setUser(user);
-            navigation.replace("Home");
-
-        } catch (e) {
-            if (e.response?.status === 422) {
-                setErrors(e.response.data.errors);
+    export default function() {
+        const dispatch = useDispatch();
+        const [name, setName] = useState("");
+        const [email, setEmail] = useState("");
+        const [password, setPassword] = useState("");
+        const [passwordConfirmation, setPasswordConfirmation] = useState("");
+        const [errors, setErrors] = useState({});
+    
+        async function handleRegister({ navigation }){
+            setErrors({});
+    
+            try {
+                const response = await axios.post('https://chaintales.bieda.it/api/v1/register', {
+                    name,
+                    email,
+                    password,
+                    password_confirmation: passwordConfirmation,
+                    device_name: `${Platform.OS} ${Platform.Version}`
+                });
+    
+                if (response.data.access_token) {
+                    dispatch(setToken(response.data.access_token));
+                    dispatch(setUser(user));
+                    navigation.replace("Home");
+                }
+    
+            } catch (e) {
+                if (e.response?.status === 422) {
+                    setErrors(e.response.data.errors);
+                }
             }
         }
-    }
 
     return (
         <SafeAreaView style={styles.wrapper}>
@@ -94,23 +93,38 @@ export default function() {
 }
 
 const styles = StyleSheet.create({
+    wrapper: {
+        flex: 1,
+        backgroundColor: '#F5F5F5',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    container: {
+        width: '80%',
+        padding: 20,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
     label: {
-        color: "#334155",
-        //fontWeight: 500,
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 5,
     },
     textInput: {
-        backgroundColor: "#f1f5f9",
         height: 40,
-        marginTop: 4,
+        borderColor: 'gray',
         borderWidth: 1,
-        borderRadius: 4,
-        borderColor: "#cbd5e1",
+        borderRadius: 5,
         padding: 10,
+        marginBottom: 15,
     },
     error: {
-        color: "red",
-        marginTop: 2,
+        color: 'red',
+        marginBottom: 15,
     },
-    wrapper: {backgroundColor: "#fff", flex: 1},
-    container: {padding: 20, rowGap: 16 },
-})
+});
