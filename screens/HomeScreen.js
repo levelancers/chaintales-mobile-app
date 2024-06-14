@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     },  
 });
 
-export default function() {
+export default function({ navigation }) {
     const dispatch = useDispatch();
     const token = useSelector(selectToken);
     const user = useSelector(selectUser);
@@ -84,6 +84,13 @@ export default function() {
                 </View> : <Text style={styles.welcomeText}>Chaintales</Text> }
                 <TouchableOpacity style={styles.logoutButton} onPress={logoutHandler}>
                     <Text style={styles.logoutText}>Logout</Text>
+                </TouchableOpacity>
+            </View>
+            <View>
+                <TouchableOpacity onPress={() => {
+                    navigation.navigate("Stories");
+                }} style={styles.button}>
+                    <Text style={{color: '#fff', fontFamily: 'MobilesFont'}}>Stories</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
