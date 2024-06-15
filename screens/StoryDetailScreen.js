@@ -9,6 +9,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 10,
+        backgroundColor: '#F8F6E3',
     },
     title: {
         fontSize: 24,
@@ -20,7 +21,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     chapterContainer: {
-        backgroundColor: '#f0f0f0',
+        backgroundColor: '#524a34',
         padding: 10,
         borderRadius: 5,
         marginBottom: 10,

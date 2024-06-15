@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Image } from 'react-native';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { selectToken } from "../store/slices/userSlice";
@@ -9,6 +9,15 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: '#F8F6E3',
     },
+    stories: {
+        color: "black",
+        fontFamily: "MobilesFont",
+        fontSize: 30,
+        textAlign: "center",
+        fontWeight: "bold",
+        padding: 10,
+        textTransform: "uppercase",
+      },
     storyButton: {
         backgroundColor: '#334155',
         padding: 10,
@@ -33,6 +42,14 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 5,
     },
+    logo: {
+        width: 300,
+        height: 100,
+        alignSelf: "center",
+        marginBottom: 20,
+        paddingHorizontal: 40,
+        resizeMode: "contain",
+      },
 });
 
 const StoriesScreen = ({ navigation }) => {
@@ -66,7 +83,15 @@ const StoriesScreen = ({ navigation }) => {
     }, []);
 
     return (
+        
         <ScrollView style={styles.container}>
+              <Image
+        source={{
+          uri: "https://i.postimg.cc/Y0xQqW9m/logo.png",
+        }}
+        style={styles.logo}
+            />
+            <Text style={styles.stories}>Stories</Text>
         {stories.map(story => (
             <TouchableOpacity 
     key={story.id} 
